@@ -46,4 +46,12 @@ digits=6&
 period=30
 
 So, the QR code is just a way to safely send the SECRET to Alice's phone.
-  
+
+
+Step 3: Alice scans QR Code
+Alice installs Google authenticator. She scans QR now the secret key is stored inside her phone , the phone now knows the secret. 
+So Now, server has secret key, Alice's phone has secret key and after this no mor communication is needed. 
+
+
+
+
