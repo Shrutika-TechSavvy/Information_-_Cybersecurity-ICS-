@@ -32,10 +32,10 @@ Step by step flow of diagrma :
 - Authenticator app (Google authenticator)
 
 
-Step 1:  Alice enables 2 FA
+**Step 1:  Alice enables 2 FA**
 Alice logs into her account and clicks  "Enable Two-factor Authentication (2FA)". Now server generates a secret key eg. Secret Key = JBSWY3DPEHPK3PXP .
 
-Step 2: Server creates a QR Code
+**Step 2: Server creates a QR Code**
 - The server does not send OTP directy. Instead , it creates a QR code.
 - The OTP contains the secret key, algorithm name(TOTP), Time step useually 30 sec, app/ account name.
   
@@ -47,11 +47,17 @@ period=30
 
 So, the QR code is just a way to safely send the SECRET to Alice's phone.
 
-
-Step 3: Alice scans QR Code
+**Step 3: Alice scans QR Code**
 Alice installs Google authenticator. She scans QR now the secret key is stored inside her phone , the phone now knows the secret. 
 So Now, server has secret key, Alice's phone has secret key and after this no mor communication is needed. 
 
+**Step 4 : How OTP is generated**
+For every 30 seconds, 
+Phone does: 
+Time Counter = Current Unix Time / 30
+Then, OTP = HMAC-SHA1(secret_key, time_counter)
+Then, take last 6 digits , show on screen eg. 628374
+- server is doing same calculation at same time because same secret, same time, same formula so both gets 628374
 
 
 
