@@ -59,5 +59,15 @@ Then, OTP = HMAC-SHA1(secret_key, time_counter)
 Then, take last 6 digits , show on screen eg. 628374
 - server is doing same calculation at same time because same secret, same time, same formula so both gets 628374
 
+**Step 5: Login process**
+Now Alice tries to login, 
+She enters: Username and Password. 
+Server says : Enter tje OTP, 
+She checks phone: 628374 and types it, 
+Server checks, it calculates its own OTP and if it matches - > login process
+
+
+
+
 
 
