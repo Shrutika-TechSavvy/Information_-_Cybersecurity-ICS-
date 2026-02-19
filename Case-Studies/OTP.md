@@ -66,8 +66,12 @@ Server says : Enter tje OTP,
 She checks phone: 628374 and types it, 
 Server checks, it calculates its own OTP and if it matches - > login process
 
+So, 
+**What flows during setup?**
+Server ➝ QR Code ➝ Phone
+(Secret key flows ONCE)
 
-
-
-
+**What flows during login?**
+User ➝ OTP ➝ Server
+(Just the 6-digit number)
 
