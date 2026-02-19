@@ -75,3 +75,10 @@ Server ➝ QR Code ➝ Phone
 User ➝ OTP ➝ Server
 (Just the 6-digit number)
 
+# Why server and app don't communicate ?
+Because both:
+  - Already know the secret
+  - Already knew the time
+  - Already know the formula
+So they independently generate the same OTP.
+**thus, TOTP works because both the server and the authenticator app share a secret key and use the current time to independently generate the same one-time password.**
