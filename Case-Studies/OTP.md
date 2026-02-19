@@ -24,5 +24,26 @@ The TOTP works because:
 <img width="800" height="375" alt="image" src="https://github.com/user-attachments/assets/0255a747-f5ee-4077-be6a-770597f17342" />
 Explaining the diagram :
   <img width="745" height="960" alt="image" src="https://github.com/user-attachments/assets/60a6b5bb-515b-4328-9896-ad4dd9dfa3c8" />
+
+Step by step flow of diagrma :
+**We have 3 main characters:**
+- Alice (User)
+- Service Provider (Google, FB, etc)
+- Authenticator app (Google authenticator)
+
+
+Step 1:  Alice enables 2 FA
+Alice logs into her account and clicks  "Enable Two-factor Authentication (2FA)". Now server generates a secret key eg. Secret Key = JBSWY3DPEHPK3PXP .
+
+Step 2: Server creates a QR Code
+- The server does not send OTP directy. Instead , it creates a QR code.
+- The OTP contains the secret key, algorithm name(TOTP), Time step useually 30 sec, app/ account name.
   
+eg. otpauth://totp/Google:alice@gmail.com?
+secret=JBSWY3DPEHPK3PXP&
+algorithm=SHA1&
+digits=6&
+period=30
+
+So, the QR code is just a way to safely send the SECRET to Alice's phone.
   
