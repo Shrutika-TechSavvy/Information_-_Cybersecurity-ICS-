@@ -4,7 +4,7 @@ def normalize_shift(shift):
         raise TypeError("Shift must be integer !!!!");
     return shift % 26     #handles negative & large shifts
 
-def caeser_cipher(text, shift_value):
+def caeser_cipher_encrypt(text, shift_value):
     if not isinstance(text, str):
         raise TypeError ("Text must be string")
     shift_value = normalize_shift(shift_value)
@@ -20,14 +20,14 @@ def caeser_cipher(text, shift_value):
             result.append(char)
     return "".join(result)    #list + join is used for faster memory usage
 
-def caeser_decrypt (text, shift_value):
+def caeser_cipher_decrypt (text, shift_value):
     shift_value = normalize_shift(shift_value)
     return caeser_cipher(text, - shift_value)
 
 #Example
 text = "Hello World !!!!!"
-encrypted = caeser_cipher(text, 3)
-decrypted = caeser_decrypt(text, 3)
+encrypted = caeser_cipher_encrypt(text, 3)
+decrypted = caeser_cipher_decrypt(text, 3)
 print("The Text to be encrypted : ")
 print(text)
 
