@@ -27,3 +27,7 @@ def caeser_decrypt (text, shift_value):
 #Example
 text = "Hello World !!!!!"
 encrypted = caeser_cipher(text, 3)
+decrypted = caeser_decrypt(text, 3)
+print("The Text to be encrypted : ")
+print(text)
+
