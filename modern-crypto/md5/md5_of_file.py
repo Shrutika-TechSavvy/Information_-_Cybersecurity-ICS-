@@ -8,5 +8,5 @@ def md5_file(filepath):
     return md5.hexdigest()
 
 if __name__ == "__main__":
-    file_path = "D:\\SEM_6\\ICS\\Information_-_Cybersecurity-ICS-\\modern-crypto\\md5\\md5_of_string.py"
+    file_path = "C:\\Users\\shrut\\OneDrive\\Desktop\\UIT2024008.jpg"
     print("MD5 hash of the file is : ", md5_file(file_path))
