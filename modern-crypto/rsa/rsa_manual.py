@@ -1,109 +1,191 @@
-# RSA with:
-# 1. Prime checking
-# 2. GCD
-# 3. Extended Euclidean Algorithm (for d)
-# 4. Fast Modular Exponentiation
-
 # -------------------------------
-# Check if number is prime
-def is_prime(num):
-    if num < 2:
+# VALIDATION FUNCTIONS
+# -------------------------------
+
+def get_positive_int(prompt):
+    while True:
+        val = input(prompt)
+        if not val.isdigit():
+            print("❌ Enter a valid positive integer (no letters/decimals).")
+            continue
+        val = int(val)
+        if val <= 0:
+            print("❌ Number must be positive.")
+            continue
+        return val
+
+
+def is_prime(n):
+    if n < 2:
         return False
-    for i in range(2, int(num ** 0.5) + 1):
-        if num % i == 0:
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
             return False
     return True
 
 
 # -------------------------------
-# GCD using Euclidean Algorithm
+# GCD & EXTENDED EUCLIDEAN
+# -------------------------------
+
 def gcd(a, b):
     while b:
         a, b = b, a % b
     return a
 
 
-# -------------------------------
-# Extended Euclidean Algorithm
-# returns gcd, x, y such that: ax + by = gcd
 def extended_gcd(a, b):
-    if b == 0:
-        return a, 1, 0
-    gcd_val, x1, y1 = extended_gcd(b, a % b)
-    x = y1
-    y = x1 - (a // b) * y1
-    return gcd_val, x, y
+    x0, x1 = 1, 0
+    y0, y1 = 0, 1
+
+    while b != 0:
+        q = a // b
+        a, b = b, a % b
+
+        x0, x1 = x1, x0 - q * x1
+        y0, y1 = y1, y0 - q * y1
+
+    return a, x0, y0
 
 
-# -------------------------------
-# Modular inverse using Extended Euclid
 def mod_inverse(e, phi):
-    gcd_val, x, y = extended_gcd(e, phi)
-    if gcd_val != 1:
+    g, x, y = extended_gcd(e, phi)
+    if g != 1:
         return None
-    return x % phi   # make positive
+    return x % phi
 
 
 # -------------------------------
-# Fast Modular Exponentiation
-# (base^exp) % mod efficiently
+# FAST EXPONENTIATION
+# -------------------------------
+
 def mod_exp(base, exp, mod):
     result = 1
     base = base % mod
 
     while exp > 0:
-        if exp % 2 == 1:          # if exponent is odd
+        if exp % 2 == 1:
             result = (result * base) % mod
+
         base = (base * base) % mod
-        exp = exp // 2
+        exp //= 2
 
     return result
 
 
 # -------------------------------
-# INPUT SECTION
+# RSA KEY GENERATION
+# -------------------------------
 
-p = int(input("Enter prime p: "))
-q = int(input("Enter prime q: "))
+def generate_keys():
+    while True:
+        p = get_positive_int("Enter prime number p: ")
+        if not is_prime(p):
+            print(" p is not prime.")
+            continue
 
-if not is_prime(p) or not is_prime(q):
-    print("Invalid! Both must be prime.")
-    exit()
+        q = get_positive_int("Enter prime number q: ")
+        if not is_prime(q):
+            print(" q is not prime.")
+            continue
 
-n = p * q
-phi = (p - 1) * (q - 1)
+        if p == q:
+            print(" p and q should be different.")
+            continue
 
-e = int(input("Enter e (coprime with phi): "))
+        break
 
-if gcd(e, phi) != 1:
-    print("Invalid e! Not coprime.")
-    exit()
+    n = p * q
+    phi = (p - 1) * (q - 1)
 
-# Find d using Extended Euclidean
-d = mod_inverse(e, phi)
+    while True:
+        e = get_positive_int("Enter e (1 < e < phi and gcd(e, phi)=1): ")
+        if e <= 1 or e >= phi:
+            print(" e must be between 1 and phi.")
+            continue
+        if gcd(e, phi) != 1:
+            print(" gcd(e, phi) must be 1.")
+            continue
+        break
 
-print("\nPublic Key:", (e, n))
-print("Private Key:", (d, n))
+    d = mod_inverse(e, phi)
+
+    print("\n Keys Generated:")
+    print("Public Key (e, n):", (e, n))
+    print("Private Key (d, n):", (d, n))
+
+    return e, d, n
 
 
 # -------------------------------
-# Encryption
-def encrypt(message, e, n):
-    return [mod_exp(ord(char), e, n) for char in message]
+# ENCRYPTION
+# -------------------------------
 
-
-# Decryption
-def decrypt(cipher, d, n):
-    return ''.join([chr(mod_exp(num, d, n)) for num in cipher])
+def encrypt(e, n):
+    msg = input("Enter message to encrypt: ")
+    cipher = [mod_exp(ord(c), e, n) for c in msg]
+    print("Encrypted Message:", cipher)
+    return cipher
 
 
 # -------------------------------
-# MESSAGE
+# DECRYPTION
+# -------------------------------
 
-msg = input("\nEnter message: ")
+def decrypt(d, n):
+    try:
+        cipher = list(map(int, input("Enter cipher numbers (space-separated): ").split()))
+    except:
+        print("Invalid cipher input.")
+        return
 
-cipher = encrypt(msg, e, n)
-print("Encrypted:", cipher)
+    message = ''.join(chr(mod_exp(c, d, n)) for c in cipher)
+    print(" Decrypted Message:", message)
 
-plain = decrypt(cipher, d, n)
-print("Decrypted:", plain)
+
+# -------------------------------
+# MENU SYSTEM
+# -------------------------------
+
+def main():
+    print("====== RSA Algorithm ======")
+
+    e = d = n = None
+
+    while True:
+        print("\nMenu:")
+        print("1. Generate Keys")
+        print("2. Encrypt Message")
+        print("3. Decrypt Message")
+        print("4. Exit")
+
+        choice = input("Enter choice: ")
+
+        if choice == '1':
+            e, d, n = generate_keys()
+
+        elif choice == '2':
+            if e is None:
+                print("Generate keys first!")
+            else:
+                encrypt(e, n)
+
+        elif choice == '3':
+            if d is None:
+                print("Generate keys first!")
+            else:
+                decrypt(d, n)
+
+        elif choice == '4':
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice.")
+
+
+# -------------------------------
+# RUN PROGRAM
+# -------------------------------
+
+main()
