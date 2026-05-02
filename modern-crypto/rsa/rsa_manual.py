@@ -24,9 +24,9 @@ def is_prime(n):
     return True
 
 
-# -------------------------------
+
 # GCD & EXTENDED EUCLIDEAN
-# -------------------------------
+
 
 def gcd(a, b):
     while b:
