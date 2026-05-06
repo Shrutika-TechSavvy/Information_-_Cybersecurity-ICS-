@@ -1,12 +1,31 @@
 import hashlib
-def md5_file(filepath):
-    md5 = hashlib.md5()
-    with open(filepath, "rb") as f :
-        #read the file in chunks so that we don't load the entire file in memory , in such a way we can hash large files
-        for chunk in iter(lambda : f.read(4096), b""):
-            md5.update(chunk)
-    return md5.hexdigest()
 
-if __name__ == "__main__":
-    file_path = "C:\\Users\\shrut\\OneDrive\\Desktop\\UIT2024008.jpg"
-    print("MD5 hash of the file is : ", md5_file(file_path))
+# Static file path
+file_path = "D:\\SEM_6\\ICS\\Information_-_Cybersecurity-ICS-\\modern-crypto\\md5\\md5_of_string.py"
+
+# Create MD5 hash object
+md5_hash = hashlib.md5()
+
+try:
+    # Open file in binary mode
+    with open(file_path, "rb") as file:
+
+        # Read file in small chunks
+        while True:
+            chunk = file.read(4096)
+
+            # Stop when file ends
+            if chunk == b"":
+                break
+
+            # Update MD5 hash with chunk data
+            md5_hash.update(chunk)
+
+    # Print final MD5 hash
+    print("MD5 Hash:", md5_hash.hexdigest())
+
+except FileNotFoundError:
+    print("File not found!")
+
+except Exception as e:
+    print("Error:", e)
