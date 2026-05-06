@@ -1,70 +1,149 @@
-def encrypt_fence(text, key) :
-    rail = [['\n' for i in range(len(text))] for j in range (key)]
-    dir_down = False
-    row, col = 0, 0
-    for i in range(len(text)):
-        if(row == 0) or (row == key-1):
-            dir_down = not dir_down
-        #filling tge corrsponding alphabet
-        rail[row][col] = text[i]
-        col+=1
-        
-        if dir_down :
-            row+=1
-        else:
-            row-=1
-    #Now constructing the cipher using the ril matrix
-    result = []
-    for i in range(key):
+# Function to validate rails
+def validate_rails(rails):
+    return rails > 1
+
+
+# Function to encrypt text
+def encrypt_rail_fence(text, rails):
+
+    rail = [['\n' for _ in range(len(text))] for _ in range(rails)]
+
+    row = 0
+    direction = 1
+
+    # Fill zig-zag pattern
+    for col in range(len(text)):
+        rail[row][col] = text[col]
+
+        if row == 0:
+            direction = 1
+        elif row == rails - 1:
+            direction = -1
+
+        row += direction
+
+    # Read row-wise
+    encrypted = ""
+
+    for i in range(rails):
         for j in range(len(text)):
-            if(rail[i][j] != '\n'):
-                result.append(rail[i][j])
-    return ("".join(result))
+            if rail[i][j] != '\n':
+                encrypted += rail[i][j]
+
+    return encrypted
 
 
-def decrypt_fence(cipher, key):
-    rail = [['\n' for i in range(len(cipher))] for j in range(key)]
-    result = []
-    dir_down = None
-    row, col = 0, 0
-    
-    #Initially marking the places with the - using the encryption logic
-    for i in range(len(cipher)):
-        
-        if(row == 0) or (row == key-1):
-            dir_down = not dir_down
-        
-        rail[row][col] = '-'
-        col+=1
-        if(dir_down):
-            row += 1
-        else:
-            row -= 1
-    #Now let's fill the rail matrix by iteratively traversing the matrix
+# Function to decrypt text
+def decrypt_rail_fence(cipher, rails):
+
+    rail = [['\n' for _ in range(len(cipher))] for _ in range(rails)]
+
+    row = 0
+    direction = 1
+
+    # Mark positions
+    for col in range(len(cipher)):
+        rail[row][col] = '*'
+
+        if row == 0:
+            direction = 1
+        elif row == rails - 1:
+            direction = -1
+
+        row += direction
+
+    # Fill cipher text
     index = 0
-    for i in range(key):
-        for j in range(len(cipher)):
-            if ((rail[i][j] == '-') and (index < len(cipher))) :
-                rail[i][j] = cipher[index]
-                index +=1
-    
-    #Now with the help of the enc logic , help to collect the alphabets
-    row, col = 0, 0
-    dir_down = False
-    for i in range(len(cipher)) : 
-        if(row  == 0 ) or (row == key-1):
-            dir_down = not dir_down
-        if(rail[row][col] != '-') : 
-            result.append(rail[row][col])
-            col+=1
-        
-        if(dir_down) : 
-            row += 1
-        else:
-            row -= 1
-    return("".join(result))
 
-#main code
-if __name__ == "__main__":
-    print(encrypt_fence("GEEKS FOR GEEKS", 3))
-    print(decrypt_fence("GSREEK O EKEFGS", 3))
+    for i in range(rails):
+        for j in range(len(cipher)):
+            if rail[i][j] == '*':
+                rail[i][j] = cipher[index]
+                index += 1
+
+    # Read zig-zag pattern
+    result = ""
+    row = 0
+    direction = 1
+
+    for col in range(len(cipher)):
+
+        result += rail[row][col]
+
+        if row == 0:
+            direction = 1
+        elif row == rails - 1:
+            direction = -1
+
+        row += direction
+
+    return result
+
+
+# Function to take user input
+def get_input():
+
+    text = input("Enter the text: ").strip()
+
+    if text == "":
+        print("Invalid input! String cannot be empty.")
+        return None, None
+
+    try:
+        rails = int(input("Enter number of rails: "))
+
+        if not validate_rails(rails):
+            print("Invalid rails! Rails must be greater than 1.")
+            return None, None
+
+    except ValueError:
+        print("Invalid input! Enter a valid number.")
+        return None, None
+
+    return text, rails
+
+
+# Main menu function
+def menu():
+
+    while True:
+
+        print("\n===== Rail Fence Cipher =====")
+        print("1. Encrypt")
+        print("2. Decrypt")
+        print("3. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+
+            text, rails = get_input()
+
+            if text is not None:
+                encrypted = encrypt_rail_fence(text, rails)
+                print("Encrypted Text:", encrypted)
+
+        elif choice == '2':
+
+            text, rails = get_input()
+
+            if text is not None:
+                decrypted = decrypt_rail_fence(text, rails)
+                print("Decrypted Text:", decrypted)
+
+        elif choice == '3':
+
+            print("Exiting program...")
+            break
+
+        else:
+            print("Invalid choice! Please enter 1, 2, or 3.")
+
+
+# Main function
+def main():
+    menu()
+
+
+# Driver Code
+main()
