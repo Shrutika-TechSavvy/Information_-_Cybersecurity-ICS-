@@ -6,11 +6,11 @@ def get_positive_int(prompt):
     while True:
         val = input(prompt)
         if not val.isdigit():
-            print("❌ Enter a valid positive integer (no letters/decimals).")
+            print(" Enter a valid positive integer (no letters/decimals).")
             continue
         val = int(val)
         if val <= 0:
-            print("❌ Number must be positive.")
+            print(" Number must be positive.")
             continue
         return val
 
