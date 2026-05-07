@@ -1,10 +1,10 @@
-import hashlib
+from hashlib import md5
 
 # Static file path
 file_path = "D:\\SEM_6\\ICS\\Information_-_Cybersecurity-ICS-\\modern-crypto\\md5\\md5_of_string.py"
 
 # Create MD5 hash object
-md5_hash = hashlib.md5()
+md5_hash = md5()
 
 try:
     # Open file in binary mode
