@@ -1,107 +1,150 @@
 import math
 
-# Convert text → numbers (A=0 ... Z=25)
+
+# ---------------- HELPER FUNCTIONS ----------------
+
+# Convert text to numbers
 def text_to_numbers(text):
-    return [ord(c) - ord('A') for c in text]
+    return [ord(ch) - 65 for ch in text]
 
 
-# Convert numbers → text
-def numbers_to_text(numbers):
-    return "".join(chr(n + ord('A')) for n in numbers)
+# Convert numbers to text
+def numbers_to_text(nums):
+    return "".join(chr(n + 65) for n in nums)
 
 
-# Build square key matrix from user input
-def build_key_matrix(key_text):
-    key_text = key_text.upper().replace(" ", "")
-    nums = text_to_numbers(key_text)
+# Build key matrix
+def build_key_matrix(key):
+    key = key.upper().replace(" ", "")
 
-    # find size of square matrix
+    nums = text_to_numbers(key)
+
+    # Find matrix size
     n = math.ceil(math.sqrt(len(nums)))
 
-    # pad with 'X' if needed
-    while len(nums) < n*n:
-        nums.append(ord('X') - ord('A'))
+    # Padding with X
+    while len(nums) < n * n:
+        nums.append(23)   # X = 23
 
-    # take exactly n*n elements
-    nums = nums[:n*n]
+    # Create matrix
+    matrix = []
 
-    # convert into matrix
-    key_matrix = []
     for i in range(0, n*n, n):
-        key_matrix.append(nums[i:i+n])
+        matrix.append(nums[i:i+n])
 
-    return key_matrix
+    return matrix
 
 
-# Convert plaintext → matrix (rows of size n)
+# Build plaintext matrix
 def build_plain_matrix(text, n):
     text = text.upper().replace(" ", "")
+
     nums = text_to_numbers(text)
 
-    # pad so length is multiple of n
+    # Padding
     while len(nums) % n != 0:
-        nums.append(ord('X') - ord('A'))
+        nums.append(23)
 
     matrix = []
+
     for i in range(0, len(nums), n):
         matrix.append(nums[i:i+n])
 
     return matrix
 
 
-# Matrix multiplication (mod 26)
-def multiply(A, B):
-    rows_A = len(A)
-    cols_A = len(A[0])
-    cols_B = len(B[0])
+# Matrix multiplication
+def multiply(P, K):
 
-    result = [[0]*cols_B for _ in range(rows_A)]
+    result = []
 
-    for i in range(rows_A):
-        for j in range(cols_B):
-            for k in range(cols_A):
-                result[i][j] += A[i][k] * B[k][j]
-            result[i][j] %= 26
-
+    for row in P:
+        new_row = []
+        for col in range(len(K)):
+            value = 0
+            for k in range(len(K)):
+                value += row[k] * K[k][col]
+            new_row.append(value % 26)
+        result.append(new_row)
     return result
 
 
-# Convert matrix → text
+# Convert matrix to text
 def matrix_to_text(matrix):
+
     nums = []
+
     for row in matrix:
         nums.extend(row)
+
     return numbers_to_text(nums)
 
 
-# ---------------- MAIN ----------------
+# Display matrix
+def display_matrix(matrix):
 
-plaintext = input("Enter plaintext: ")
-key_text = input("Enter key: ")
+    for row in matrix:
+        print(row)
 
-# Step 1: build key matrix
-K = build_key_matrix(key_text)
-n = len(K)
 
-print("\nKey Matrix:")
-for row in K:
-    print(row)
+# ---------------- ENCRYPTION ----------------
 
-# Step 2: build plaintext matrix
-P = build_plain_matrix(plaintext, n)
+def hill_cipher_encrypt():
 
-print("\nPlaintext Matrix:")
-for row in P:
-    print(row)
+    plaintext = input("Enter plaintext: ")
+    key = input("Enter key: ")
 
-# Step 3: multiply P × K
-C = multiply(P, K)
+    # Validations
+    if not plaintext.isalpha():
+        print("Plaintext should contain only alphabets")
+        return
 
-print("\nCipher Matrix:")
-for row in C:
-    print(row)
+    if not key.isalpha():
+        print("Key should contain only alphabets")
+        return
 
-# Step 4: convert to text
-ciphertext = matrix_to_text(C)
+    # Build matrices
+    K = build_key_matrix(key)
 
-print("\nCiphertext:", ciphertext)
+    n = len(K)
+
+    P = build_plain_matrix(plaintext, n)
+
+    # Multiply
+    C = multiply(P, K)
+
+    # Convert to text
+    ciphertext = matrix_to_text(C)
+
+    # Output
+    print("\nKey Matrix:")
+    display_matrix(K)
+
+    print("\nPlaintext Matrix:")
+    display_matrix(P)
+
+    print("\nCipher Matrix:")
+    display_matrix(C)
+
+    print("\nCiphertext:", ciphertext)
+
+
+# ---------------- MENU ----------------
+
+while True:
+
+    print("\n===== HILL CIPHER MENU =====")
+    print("1. Encrypt")
+    print("2. Exit")
+
+    choice = input("Enter choice: ")
+
+    if choice == "1":
+        hill_cipher_encrypt()
+
+    elif choice == "2":
+        print("Exiting...")
+        break
+
+    else:
+        print("Invalid choice")

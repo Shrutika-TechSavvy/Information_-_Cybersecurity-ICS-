@@ -109,12 +109,10 @@ def decrypt(matrix, text):
     text = re.sub(r'[^A-Z]', '', text)
 
     for i in range(0, len(text), 2):
-
         a = text[i]
         b = text[i+1]
 
         decrypted_pair = decrypt_pair(matrix, a, b)
-
         result += decrypted_pair
 
     return result

@@ -1,4 +1,5 @@
 from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
 import base64
 
 
@@ -23,25 +24,28 @@ def get_key():
 
 
 # -------------------------
-# Encrypt using CTR
+# Encrypt using CBC
 # -------------------------
-def encrypt_ctr():
+def encrypt_cbc():
 
     message = input("\nEnter message: ")
 
     key = get_key()
 
     # Create cipher object
-    cipher = AES.new(key, AES.MODE_CTR)
+    cipher = AES.new(key, AES.MODE_CBC)
 
-    # Convert to bytes
+    # Convert message to bytes
     data = message.encode()
 
-    # Encrypt
-    ciphertext = cipher.encrypt(data)
+    # Pad data
+    padded_data = pad(data, AES.block_size)
 
-    # Store nonce + ciphertext
-    encrypted_data = cipher.nonce + ciphertext
+    # Encrypt
+    ciphertext = cipher.encrypt(padded_data)
+
+    # Store IV + ciphertext
+    encrypted_data = cipher.iv + ciphertext
 
     # Convert to readable text
     encoded_data = base64.b64encode(
@@ -53,9 +57,9 @@ def encrypt_ctr():
 
 
 # -------------------------
-# Decrypt using CTR
+# Decrypt using CBC
 # -------------------------
-def decrypt_ctr():
+def decrypt_cbc():
 
     encoded_data = input(
         "\nEnter encrypted message: "
@@ -70,22 +74,28 @@ def decrypt_ctr():
             encoded_data
         )
 
-        # Extract nonce
-        nonce = encrypted_data[:8]
+        # Extract IV
+        iv = encrypted_data[:16]
 
         # Extract ciphertext
-        ciphertext = encrypted_data[8:]
+        ciphertext = encrypted_data[16:]
 
         # Create cipher object
         cipher = AES.new(
             key,
-            AES.MODE_CTR,
-            nonce=nonce
+            AES.MODE_CBC,
+            iv=iv
         )
 
         # Decrypt
-        plaintext = cipher.decrypt(
+        decrypted_data = cipher.decrypt(
             ciphertext
+        )
+
+        # Remove padding
+        plaintext = unpad(
+            decrypted_data,
+            AES.block_size
         )
 
         print("\nDecrypted Message:")
@@ -102,7 +112,7 @@ def main():
 
     while True:
 
-        print("\n===== AES CTR MODE =====")
+        print("\n===== AES CBC MODE =====")
         print("1. Encrypt")
         print("2. Decrypt")
         print("3. Exit")
@@ -110,10 +120,10 @@ def main():
         choice = input("\nEnter choice: ")
 
         if choice == '1':
-            encrypt_ctr()
+            encrypt_cbc()
 
         elif choice == '2':
-            decrypt_ctr()
+            decrypt_cbc()
 
         elif choice == '3':
             break
